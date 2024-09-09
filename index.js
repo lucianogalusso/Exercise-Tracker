@@ -177,41 +177,21 @@ app.get('/api/users/:_id/logs', function(req, res) {
             log: []
           };
 
-          if (from !== null || to !== null || limit !== null) {
+          let filteredLogs = log.log.filter(element => {
+            let date = new Date(element.date);
+            let fromDate = from ? new Date(from) : null;
+            let toDate = to ? new Date(to) : null;
+            return (!fromDate || date >= fromDate) && (!toDate || date <= toDate);
+          });
 
-            let max = log.log.length;
-            if (limit !== null && limit < max)
-              max = limit;
+          if (limit) 
+            filteredLogs = filteredLogs.slice(0, limit);
 
-            console.log(max);
-
-            let i = 0;
-            //VER BIEN i Y EL CONTINUE
-            while (log.log[i] !== undefined && i < max) {
-
-              let element = log.log[i];
-              
-              console.log(from);
-              console.log(to);
-              let date = new Date(element.date);
-              let fromDate = from !== null ? new Date(from) : null;
-              let toDate = to !== null ? new Date(to) : null;
-            
-              if (fromDate && date < fromDate) {
-                i++;
-                continue;
-              }
-              if (toDate && date > toDate) {
-                i++;
-                continue;
-              }
-              
-              returnObj.log.push(element);
-              i++;
-            }
-            
-          } else 
-            returnObj.log = log.log;
+          returnObj.log = filteredLogs.map(element => ({
+            description: element.description,
+            duration: element.duration,
+            date: element.date
+          }));
           
           return res.json(returnObj);
         })
