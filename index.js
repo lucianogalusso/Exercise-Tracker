@@ -197,9 +197,15 @@ app.get('/api/users/:_id/logs', function(req, res) {
               let fromDate = from !== null ? new Date(from) : null;
               let toDate = to !== null ? new Date(to) : null;
             
-              if (fromDate && date < fromDate) continue;
-              if (toDate && date > toDate) continue;
-
+              if (fromDate && date < fromDate) {
+                i++;
+                continue;
+              }
+              if (toDate && date > toDate) {
+                i++;
+                continue;
+              }
+              
               returnObj.log.push(element);
               i++;
             }
